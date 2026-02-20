@@ -12,7 +12,7 @@ use aya::programs::{CgroupAttachMode, LinkOrder, SchedClassifier, SockOps, TcAtt
 use aya::Ebpf;
 use log::{debug, error, info};
 use netns_rs::NetNs;
-use rand::{Rng, RngCore};
+use rand::Rng;
 use std::fs::File;
 use std::io::Read;
 use std::net::SocketAddr;
@@ -153,12 +153,13 @@ async fn run_client(
 
 async fn send_random_data(stream: &mut TcpStream) {
     stream.set_nodelay(true).unwrap();
-    let packets = rand::rng().random_range(50..150);
+    let mut rng = rand::rng();
+    let packets = rng.random_range(50..150);
 
     let mut data = [0; 2048];
     for _ in 0..packets {
-        let len = rand::rng().random_range(200..2048);
-        rand::rng().fill_bytes(&mut data[..len]);
+        let len = rng.random_range(200..2048);
+        rng.fill_bytes(&mut data[..len]);
 
         stream.write_all(&data).await.unwrap();
         let mut response = vec![0; len];

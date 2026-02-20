@@ -12,6 +12,10 @@ clusterRoleBinding:
 
 serviceAccount:
   name: aws-network-flow-monitor-agent-service-account
+  # Annotations to add to the service account (e.g., for IAM roles for service accounts - IRSA)
+  annotations: {}
+  #   eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/my-role-name
+  #   custom-annotation: custom-value
 
 daemonSet:
   name: aws-network-flow-monitor-agent
@@ -34,6 +38,21 @@ env:
   OPEN_METRICS_PORT: "9109"
   OPEN_METRICS_ADDRESS: "0.0.0.0"
   # DISABLE_PUBLISHING: "true"
+
+# CA Certificate Bundle configuration
+# Allows mounting a custom CA certificate bundle from a Kubernetes Secret
+caCerts:
+  # Enable CA certificate bundle mounting
+  enabled: false
+  # Name of the Secret containing the CA certificate bundle
+  secretName: "ca-cert-bundle"
+  # Key in the Secret that contains the CA certificate bundle (optional)
+  # If not specified, all keys in the secret will be mounted
+  secretKey: "ca-bundle.crt"
+  # Mount path for the CA certificate bundle
+  mountPath: "/etc/ssl/certs"
+  # File name for the CA certificate bundle
+  fileName: "ca-bundle.crt"
 
 resources:
   limits:
